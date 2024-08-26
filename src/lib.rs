@@ -1,14 +1,12 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+#![no_std]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+extern crate alloc;
+#[macro_use]
+extern crate log;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use emu_device::EmulatedDeviceConfig;
+mod config;
+pub use config::AxVmDeviceConfig;
+
+mod device;
+pub use device::AxVmDevices;
