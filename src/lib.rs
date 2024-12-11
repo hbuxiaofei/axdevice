@@ -14,6 +14,12 @@ extern crate log;
 
 mod config;
 mod device;
+mod fwcfg;
+mod rtc;
+mod pci;
 
 pub use config::AxVmDeviceConfig;
 pub use device::AxVmDevices;
+pub use fwcfg::FwCfgDevice;
+pub use rtc::RtcDevice;
+pub use pci::PciDevice;

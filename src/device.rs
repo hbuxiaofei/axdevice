@@ -1,4 +1,7 @@
 use crate::AxVmDeviceConfig;
+use crate::FwCfgDevice;
+use crate::RtcDevice;
+use crate::PciDevice;
 
 use alloc::sync::Arc;
 use alloc::vec::Vec;
@@ -29,6 +32,9 @@ impl AxVmDevices {
 
     /// According the emu_configs to init every  specific device
     fn init(this: &mut Self, emu_configs: &Vec<EmulatedDeviceConfig>) {
+        this.emu_devices.push(Arc::new(FwCfgDevice::new()));
+        this.emu_devices.push(Arc::new(RtcDevice::new()));
+        this.emu_devices.push(Arc::new(PciDevice::new()));
         /*
         for config in emu_configs {
             let dev = match EmuDeviceType::from_usize(config.emu_type) {
@@ -59,6 +65,41 @@ impl AxVmDevices {
             .iter()
             .find(|&dev| dev.address_range().contains(ipa))
             .cloned()
+    }
+
+    /// Handle the io read by port
+    pub fn handle_port_read(&self, port: u16, width: usize) ->  AxResult<usize> {
+        let port = GuestPhysAddr::from(port as usize);
+        if let Some(emu_dev) = self.find_dev(port) {
+            debug!(
+                "emu: {:?} handler read port:{:#x} width:{:}",
+                emu_dev.address_range(),
+                port, width
+            );
+            return emu_dev.handle_read(port, width);
+        }
+        panic!(
+            "emu_handler: no emul handler read for data abort port {:#x}",
+            port
+        );
+    }
+
+    /// Handle the io write by port
+    pub fn handle_port_write(&self, port: u16, width: usize, val: usize) {
+        let port = GuestPhysAddr::from(port as usize);
+        if let Some(emu_dev) = self.find_dev(port) {
+            debug!(
+                "emu: {:?} handler write port:{:#x} width:{:} val:{:#x}",
+                emu_dev.address_range(),
+                port, width, val
+            );
+            emu_dev.handle_write(port, width, val);
+            return;
+        }
+        panic!(
+            "emu_handler: no emul handler write for data abort port {:#x}",
+            port
+        );
     }
 
     /// Handle the MMIO read by GuestPhysAddr and data width, return the value of the guest want to read
