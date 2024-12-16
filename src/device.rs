@@ -1,7 +1,7 @@
 use crate::AxVmDeviceConfig;
 use crate::FwCfgDevice;
 use crate::RtcDevice;
-use crate::PciDevice;
+use crate::PciBus;
 
 use alloc::sync::Arc;
 use alloc::vec::Vec;
@@ -34,7 +34,7 @@ impl AxVmDevices {
     fn init(this: &mut Self, emu_configs: &Vec<EmulatedDeviceConfig>) {
         this.emu_devices.push(Arc::new(FwCfgDevice::new()));
         this.emu_devices.push(Arc::new(RtcDevice::new()));
-        this.emu_devices.push(Arc::new(PciDevice::new()));
+        this.emu_devices.push(Arc::new(PciBus::new()));
         /*
         for config in emu_configs {
             let dev = match EmuDeviceType::from_usize(config.emu_type) {

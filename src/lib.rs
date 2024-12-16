@@ -22,4 +22,4 @@ pub use config::AxVmDeviceConfig;
 pub use device::AxVmDevices;
 pub use fwcfg::FwCfgDevice;
 pub use rtc::RtcDevice;
-pub use pci::PciDevice;
+pub use pci::PciBus;
